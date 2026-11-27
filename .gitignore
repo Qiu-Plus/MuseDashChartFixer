@@ -1,0 +1,30 @@
+# 构建产物
+dist/
+dist_portable/
+portable/
+build/
+.build/
+*.spec
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 测试/验收临时产物
+tests/out/
+tests/fixtures/
+.verify_tmp/
+.tmp/
+
+# 运行/发布产物
+*.zip
+debug.log
+launch.log
+MuseDashChartFixer_crash.log
+
+# 本地编辑器
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
