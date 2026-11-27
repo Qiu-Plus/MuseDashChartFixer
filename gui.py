@@ -221,8 +221,18 @@ class ChartFixerApp:
     # ------------------------------------------------------------------
     def _setup_window(self):
         self.root.title(APP_TITLE)
-        self.root.geometry("1160x850")
-        self.root.minsize(1000, 700)
+        # 按屏幕大小自适应，避免小屏/高缩放下窗口底部按钮与日志被裁掉
+        try:
+            screen_w = self.root.winfo_screenwidth()
+            screen_h = self.root.winfo_screenheight()
+        except tk.TclError:
+            screen_w, screen_h = 1280, 800
+        width = min(1160, max(940, screen_w - 80))
+        height = min(840, max(620, screen_h - 140))
+        pos_x = max(0, (screen_w - width) // 2)
+        pos_y = max(0, (screen_h - height) // 2 - 20)
+        self.root.geometry("%dx%d+%d+%d" % (width, height, pos_x, pos_y))
+        self.root.minsize(min(940, width), min(600, height))
         # 双击启动时窗口可能被其他程序挡住，用户会误以为没启动：先置顶抢焦点，再取消置顶
         try:
             self.root.attributes("-topmost", True)
@@ -285,9 +295,10 @@ class ChartFixerApp:
         self._build_game_frame()
         self._build_toolbar()
         self._build_plan_frame()
-        self._build_tree()
-        self._build_log()
+        # 先占住底部按钮与日志区；窗口变小时优先压缩扫描结果区，保证底部始终可见
         self._build_bottom()
+        self._build_log()
+        self._build_tree()
 
     def _build_game_frame(self):
         frame = ttk.LabelFrame(self.root, text="游戏目录")
@@ -395,10 +406,10 @@ class ChartFixerApp:
 
     def _build_log(self):
         frame = ttk.LabelFrame(self.root, text="运行日志")
-        frame.pack(fill="x", padx=10, pady=(0, 4))
+        frame.pack(fill="x", side="bottom", padx=10, pady=(0, 4))
         self.log_text = scrolledtext.ScrolledText(
             frame,
-            height=8,
+            height=6,
             wrap="word",
             state="disabled",
             font=(self.font_family, 9),
@@ -409,7 +420,7 @@ class ChartFixerApp:
 
     def _build_bottom(self):
         frame = ttk.Frame(self.root)
-        frame.pack(fill="x", padx=10, pady=(0, 10))
+        frame.pack(fill="x", side="bottom", padx=10, pady=(0, 10))
         ttk.Button(frame, text="打开 Custom_Albums", command=self.on_open_custom_albums).pack(side="left")
         ttk.Button(
             frame, text="打开 Euterpe_Charts/Offline", command=self.on_open_offline

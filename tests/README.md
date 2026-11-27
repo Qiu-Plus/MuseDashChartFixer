@@ -9,7 +9,7 @@
 ```
 tests/fixtures/
 ├── Custom_Albums/
-│   ├── [Lv 10]MEGAMIX 2.mdm           # 喵斯兔转坏的 .mdm（info.json 为 Euterpe manifest 风格 + BOM + bpm=0）
+│   ├── [Lv 10]MEGAMIX 2.mdm           # 喵斯兔转坏的 .mdm（info.json 为清单型结构 + BOM + bpm=0）
 │   ├── [lv 10]Cherry Pop.mdm
 │   ├── [lv 10]Infinity Heaven.mdm
 │   ├── [lv 10]memorys.mdm

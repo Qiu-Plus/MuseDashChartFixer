@@ -411,8 +411,8 @@ def _bms_info_for_slot(bms_texts: dict, slot: int) -> dict:
 # ============================================================================
 
 
-def _is_euterpe_style(raw_info: dict) -> bool:
-    """判断 info 是否是 Euterpe manifest 风格（含 schema/meta/files）。"""
+def _is_manifest_info_style(raw_info: dict) -> bool:
+    """判断 info 是否是“清单型”结构（含 schema/cid/meta/files，喵斯兔转换产物常见）。"""
     if not isinstance(raw_info, dict):
         return False
     if isinstance(raw_info.get("meta"), dict):
@@ -423,7 +423,7 @@ def _is_euterpe_style(raw_info: dict) -> bool:
 
 
 def to_manifest(raw_info: dict, bms_texts: dict, file_sizes: dict, fallback_name: str = "") -> dict:
-    """把 CAM info / Euterpe manifest / BMS 兜底信息统一成 Euterpe manifest 结构。"""
+    """把 CAM info / 清单型 info.json / BMS 兜底信息统一成统一的清单模型。"""
     raw = raw_info if isinstance(raw_info, dict) else {}
     meta = raw.get("meta") if isinstance(raw.get("meta"), dict) else {}
     primary_bms = _primary_bms_info(bms_texts)
@@ -602,7 +602,7 @@ def to_manifest(raw_info: dict, bms_texts: dict, file_sizes: dict, fallback_name
     }
 
 
-def _apply_euterpe_migration_quirks(manifest: dict) -> dict:
+def _apply_migration_quirks(manifest: dict) -> dict:
     """对齐 Euterpe App 实测的 CAM -> 离线迁移细节（就地修改并返回）。
 
     实测样本（good/reference_offline_lv9.json）：当 CAM 的 hideBmsDifficulty 为 "0"
@@ -914,11 +914,11 @@ def _finish_item(
     item.author = manifest["meta"]["author"]
 
     if info_present and isinstance(raw_info, dict):
-        # Euterpe manifest 结构
-        if _is_euterpe_style(raw_info):
-            if not any("Euterpe" in message for message in errors):
+        # 清单型结构（schema/cid/meta/files）：只描述数据模型，不代表 Euterpe 有问题
+        if _is_manifest_info_style(raw_info):
+            if not any(("清单" in message or "manifest" in message.lower()) for message in errors):
                 errors.append(
-                    "info.json 是 Euterpe manifest 结构（含 schema/meta/files），CustomAlbums 无法识别"
+                    "info.json 是清单型结构（含 schema/cid/meta/files），不是 CAM 谱面格式，无法识别"
                 )
         # 缺少 CAM 顶层字段
         missing = [key for key in CAM_TOP_KEYS if key not in raw_info]
@@ -1634,7 +1634,7 @@ def _convert_euterpe(item: ScanItem, payload: dict, offline_dir, dry_run: bool) 
     manifest = copy.deepcopy(payload.get("manifest") or {})
     if not isinstance(manifest, dict) or not manifest.get("meta"):
         return ActionResult(item, False, None, "缺少有效的 manifest 数据，无法转换")
-    _apply_euterpe_migration_quirks(manifest)
+    _apply_migration_quirks(manifest)
 
     os.makedirs(target, exist_ok=False)
     try:

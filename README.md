@@ -3,8 +3,9 @@
 修复被**喵斯兔（MuseDashTOOL / MDT）**转坏的 Euterpe 自制谱面，让 Euterpe v1 重新能玩。
 
 - 目标文件：Custom_Albums 里的 `.mdm`（本质是 zip），或已经解压的旧版 CAM 谱面文件夹
-- 典型症状：info.json 变成 Euterpe manifest 结构、带 UTF-8 BOM、bpm=0、缺少 CAM 字段；
+- 典型症状：info.json 变成“清单型”结构（schema/cid/meta/files，不是 CAM 字段）、带 UTF-8 BOM、bpm=0；
   老版 Euterpe（基于 CustomAlbums）勉强能读，新版 Euterpe v1 读不了，谱面消失/不能玩
+  （注：这种“清单型”结构是喵斯兔转换时写错的格式，**不是 Euterpe 的问题**——Euterpe 不会生成这种 info.json。）
 - 提供两种修复方案（界面里二选一）：
   1. **方案 1：就地修复 .mdm 里的 info.json（推荐，默认）**
      源 .mdm 位置/文件名不变；只把包内 info.json 改成合法的 CustomAlbums 格式；
@@ -20,13 +21,14 @@
 
 ## 使用方法（图形界面）
 
-0. 解压后**双击「启动（双击我）.bat」**（推荐，启动文件夹版）；也可以直接双击 `portable\MuseDashChartFixer.exe`。
-   若双击没反应：先等 10~20 秒，或运行「启动诊断.bat」；Windows 提示「已保护你的电脑」时点「更多信息 → 仍要运行」。
-2. 选择游戏目录（例如 `D:\steam\steamapps\common\Muse Dash`），程序会自动定位 `Custom_Albums`
-3. 点「扫描」，列表会显示每个损坏谱面、作者与问题摘要
-4. 选择方案（推荐先用方案 1；若谱面仍不显示，再改用方案 2）
-5. 可勾选「仅预览，不写入文件」先看结果
-6. **先关闭游戏**，点「开始转换」，完成后重启游戏
+**启动**：解压后双击「启动（双击我）.bat」——启动文件夹版，启动最快、最稳；也可直接双击 `portable\MuseDashChartFixer.exe`。
+若双击没反应：先等 10~20 秒（单文件版要自解压）；Windows 提示「已保护你的电脑」时点「更多信息 → 仍要运行」；仍不行就运行「启动诊断.bat」。
+
+1. 选择游戏目录（例如 `D:\steam\steamapps\common\Muse Dash`），程序会自动定位 `Custom_Albums`
+2. 点「扫描」，列表会显示每个损坏谱面、作者与问题摘要
+3. 选择方案（推荐先用方案 1；若谱面仍不显示，再改用方案 2）
+4. 可勾选「仅预览，不写入文件」先看结果
+5. **先关闭游戏**，点「开始转换」，完成后重启游戏
 
 转换完成后：
 - 方案 1：直接重启游戏，Euterpe 会在启动时把修复后的 .mdm 导入「Euterpe 离线」曲包

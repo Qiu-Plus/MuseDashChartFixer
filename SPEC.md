@@ -3,7 +3,7 @@
 ## 0. 背景（已确证的事实）
 - 喵斯兔（MuseDashTOOL，英文缩写 MDT，仓库 https://github.com/Suzimo506/MuseDashTOOL）会把 Euterpe 的谱面
   （Euterpe_Charts/Online、Offline 里的谱）转成 .mdm（本质是 zip），放到游戏的 Custom_Albums 里，
-  但生成的 info.json 是**Euterpe manifest 风格的 JSON**（带 schema/cid/meta/files），且带 UTF-8 BOM、
+  但生成的 info.json 是**清单型 JSON**（带 schema/cid/meta/files），且带 UTF-8 BOM、
   缺少 CustomAlbums 需要的顶层字段、bpm 可能为 0，因此：
   - Euterpe v0（基于 CustomAlbums 的老模组）还能勉强识别；
   - Euterpe v1（自研谱面系统，从游戏目录 Euterpe_Charts 读取 Online/Offline）无法读取。
@@ -30,7 +30,7 @@
     "levelDesigner2": "...", "charter": "...", "levelDesigner": "..." }
 - 已证实的问题：BOM；bpm 可能为 0；顶层缺 scene/sceneEgg/difficulty1/3/4/5/levelDesigner1/3/4/5/
   hideBmsMode/hideBmsDifficulty/hideBmsMessage/unlockLevel/searchTags/battleUi；
-  info.json 只有 Euterpe manifest 结构。
+  info.json 只有清单型结构（schema/cid/meta/files）。
 
 ### 1.2 合法的 CustomAlbums info.json（已知可用，来自 MDT 制谱器/社区 .mdm）
 {
@@ -124,7 +124,7 @@ int(正数 positive fixint/uint8/16/32/64，负数 int8/16/32/64)、float64(0xcb
 ## 4. 检测与“损坏”判定
 scan 时对每个候选项产出 ScanItem：
 - path、kind("mdm"/"folder")、chart_name、author、issues[]
-- issues 至少覆盖：JSON 解析失败；带 BOM；Euterpe manifest 结构（schema/meta/files）；
+- issues 至少覆盖：JSON 解析失败；带 BOM；清单型结构（schema/meta/files）；
   缺少 CAM 顶层字段；bpm 非正；scene 非法；难度槽与包内 bms 不一致；
   缺 info.json；缺 music.ogg（warning）；manifest.files 与包内文件不符（warning）
 - valid = 无“严重”issues（BOM 单独算轻微，但如果同时缺字段则算损坏；实现上：只要 needs_fix 为真就列出）
